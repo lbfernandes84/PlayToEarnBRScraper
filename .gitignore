@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+#project related ignore
+p2ebr-wscraper/
+TestData/
+
 # Distribution / packaging
 .Python
 build/
@@ -19,7 +23,6 @@ lib64/
 parts/
 sdist/
 var/
-p2ebr-wscraper/
 wheels/
 pip-wheel-metadata/
 share/python-wheels/
