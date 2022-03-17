@@ -1,11 +1,12 @@
+from urllib import response
+import requests
 from bs4 import BeautifulSoup
 
-from selenium import webdriver
-
-from webdriver_manager.chrome import ChromeDriverManager
 
 import time
 import config
+
+SUCCESSFULL_REQUEST_STATUS = 200
 
 class P2EGame:
 
@@ -22,25 +23,36 @@ class P2EGame:
         self.support_to_nft = False
         self.free_to_play = []
 
-def create_driver():
-    options = webdriver.ChromeOptions()
-    options.add_argument('--ignore-certificate-errors')
-    options.add_argument('--ignore-ssl-errors')
-    options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    return webdriver.Chrome(ChromeDriverManager().install(), options=options)
+def connect_to_source(url):
+    r = requests.get(url)
+    soup = None
+    if r.status_code == SUCCESSFULL_REQUEST_STATUS:  
+        soup = BeautifulSoup(r.text, 'html.parser')
+    return r.status_code, soup
 
-def collect_p2e_games_list(driver, url):
-    links =[]
-    driver.get(url)
-    time.sleep(10)
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
+def collect_p2e_games_list(soup):
+    links =[]    
     table = soup.find('table', class_="table table-bordered mainlist")
     all_games = table.find_all('a', class_='dapp_detaillink socialscoregraph')    
     for game in all_games:
         links.append(game['href'])
-        print(links[-1])
+        # print(links[-1])
     return links
 
 if __name__ == '__main__':
-    driver = create_driver()
-    collect_p2e_games_list(driver, config.MAIN_URL)
+    url = config.MAIN_URL
+    status = SUCCESSFULL_REQUEST_STATUS
+    all_links = []
+    while url is not None:
+        status, soup = connect_to_source(url)
+        all_links.extend(collect_p2e_games_list(soup)) 
+        next_link = soup.find('a', class_="page-link", rel='next')
+        print('status: ', status)
+        print('next_link: ', next_link)
+        if next_link:
+            url = next_link['href']
+        else:
+            url = None
+    print('Number of games: ',len(all_links))
+    for link in all_links:
+        print(link)

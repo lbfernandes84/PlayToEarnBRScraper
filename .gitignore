@@ -9,6 +9,7 @@ __pycache__/
 #project related ignore
 p2ebr-wscraper/
 TestData/
+config.py
 
 # Distribution / packaging
 .Python
