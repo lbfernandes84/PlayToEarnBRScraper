@@ -17,9 +17,7 @@ class P2EGame:
         self.status = ''
         self.short_description = ''
         self.description = ''
-        self.twitter = ''
-        self.discord_server = ''
-        self.website = ''
+        self.social = {'website': '', 'twitter': '', 'discord': ''}
         self.genre = []
         self.blockchain = []
         self.devices = []
@@ -32,7 +30,7 @@ class P2EGame:
         blockchain = ', '.join(self.blockchain)
         devices = ', '.join(self.devices)
         play_to_earn = ', '.join(self.play_to_earn)
-        return f'Nome: {self.name}\n status: {self.status}\n descrição: {self.description}\n twitter: {self.twitter}\n discord: {self.discord_server}\n website: {self.website}\n genre: {genre}\n blockchain: {blockchain}\n devices: {devices}\n support nft: {self.support_to_nft}\n Free to play: {self.free_to_play}\n Play to Earn: {play_to_earn}\n'
+        return f'Nome: {self.name}\n status: {self.status}\n descrição: {self.description}\n twitter: {self.social["twitter"]}\n discord: {self.social["discord"]}\n website: {self.social["website"]}\n genre: {genre}\n blockchain: {blockchain}\n devices: {devices}\n support nft: {self.support_to_nft}\n Free to play: {self.free_to_play}\n Play to Earn: {play_to_earn}\n'
 
 
 def connect_to_source(url):
@@ -98,6 +96,17 @@ def collect_p2e_games_details(p2e_links):
                 p2egame.free_to_play = subdiv[1].find('a').string
                 play_to_earn = subdiv[2].find_all('a')
                 p2egame.play_to_earn = [a.string for a in play_to_earn]
+
+            div = soup.find('div', class_='social')
+            references = div.find_all('a')
+            for reference in references:
+                subdiv = reference.find('div')
+                print('Class: ', subdiv['class'])
+                if len(subdiv['class']) == 3:
+                    candidate_key = subdiv['class'][2]
+                    print("Candidate key: ", candidate_key)
+                    if p2egame.social.get(candidate_key) is not None:
+                        p2egame.social[candidate_key] = reference['href']
             print(p2egame)
 
 
