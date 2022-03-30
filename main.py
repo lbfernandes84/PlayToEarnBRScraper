@@ -66,13 +66,13 @@ def collect_p2e_games_details(p2e_links):
             p2egame.status = soup.find('a', class_='status').string
 
             # nft game description
+            print("Description: ", soup.find_all('p')[2])
             p2egame.description = soup.find('p').string
 
             # nft game genre
             div = soup.find('div', class_='dapp_categories')
             genre = div.find_all('a')
             p2egame.genre = [a.string for a in genre]
-            print("Genre: ", p2egame.genre)
 
             # nft game blockchain
             div = soup.find('div', class_='dapp_platforms')
@@ -97,17 +97,16 @@ def collect_p2e_games_details(p2e_links):
                 play_to_earn = subdiv[2].find_all('a')
                 p2egame.play_to_earn = [a.string for a in play_to_earn]
 
+            # social media details
             div = soup.find('div', class_='social')
             references = div.find_all('a')
             for reference in references:
                 subdiv = reference.find('div')
-                print('Class: ', subdiv['class'])
                 if len(subdiv['class']) == 3:
                     candidate_key = subdiv['class'][2]
-                    print("Candidate key: ", candidate_key)
                     if p2egame.social.get(candidate_key) is not None:
                         p2egame.social[candidate_key] = reference['href']
-            print(p2egame)
+            # print(p2egame)
 
 
 if __name__ == '__main__':
